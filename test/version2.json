@@ -1,0 +1,36 @@
+{
+  "bitcoin.magic": "0xfabfb5da",
+  "bitcoin.command": "version",
+  "bitcoin.length": "102",
+  "bitcoin.checksum": "0x8084b609",
+  "bitcoin.version": {
+    "bitcoin.version.version": "70015",
+    "bitcoin.version.services": "0x0000000000000005",
+    "bitcoin.version.services_tree": {
+      "bitcoin.services.network": "1"
+    },
+    "bitcoin.version.timestamp": "Dec 20, 2016 15:19:47.000000000 UTC",
+    "bitcoin.version.addr_you": {
+      "bitcoin.address.services": "0x0000000000000000",
+      "bitcoin.address.services_tree": {
+	"bitcoin.services.network": "0"
+      },
+      "bitcoin.address.address": "::",
+      "bitcoin.address.port": "0"
+    },
+    "bitcoin.version.addr_me": {
+      "bitcoin.address.services": "0x0000000000000005",
+      "bitcoin.address.services_tree": {
+	"bitcoin.services.network": "1"
+      },
+      "bitcoin.address.address": "::",
+      "bitcoin.address.port": "0"
+    },
+    "bitcoin.version.nonce": "0xe13453482ff426cb",
+    "bitcoin.version.user_agent": {
+      "bitcoin.string.count": "17",
+      "bitcoin.string.value": "\/Satoshi:0.13.99\/"
+    },
+    "bitcoin.version.start_height": "0"
+  }
+}
