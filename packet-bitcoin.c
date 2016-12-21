@@ -867,7 +867,7 @@ dissect_bitcoin_msg_version(tvbuff_t *tvb, packet_info *pinfo _U_, proto_tree *t
     offset += 4;
   }
 
-  if (version >= 70002)
+  if (version >= 70002 && tvb_reported_length_remaining(tvb, offset) > 0)
   {
     proto_tree_add_item(tree, &hfi_msg_version_relay, tvb, offset, 1, ENC_LITTLE_ENDIAN);
     offset += 1;
