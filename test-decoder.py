@@ -11,13 +11,14 @@ import sys
 
 def run_test(test_name):
     pcap_file = os.path.join("test", test_name) + ".pcap"
-    json_file = pcap_file.strip(".pcap") + ".json"
-    # print(json_file, pcap_file)
+    json_file = os.path.join("test", test_name) + ".json"
 
     # Parse the .json file
-    comparison_out = open(json_file).read()
-    comparison_json = json.loads(comparison_out)
-    # print(outjson)
+    try:
+        comparison_out = open(json_file).read()
+        comparison_json = json.loads(comparison_out)
+    except:
+        logging.error("Unable to open or parse output file " + json_file)
 
     # Use tshark to decode the .pcap file
     process_out = subprocess.run(["tshark","-r", pcap_file, "-T", "json"], stdout = subprocess.PIPE, universal_newlines = True).stdout
@@ -59,7 +60,7 @@ def main():
         # Find all the .pcap files in the /test directory.
         if filename.endswith(".pcap"): 
             try:
-                run_test(filename.strip(".pcap"))
+                run_test(filename[:-5])
                 logging.info("PASSED: " + filename)
             except:
                 logging.info("FAILED: " + filename)
