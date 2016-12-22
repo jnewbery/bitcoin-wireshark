@@ -1,0 +1,6 @@
+{
+"bitcoin.magic": "0xfabfb5da",
+  "bitcoin.command": "sendheaders",
+  "bitcoin.length": "0",
+  "bitcoin.checksum": "0x5df6e0e2"
+}
