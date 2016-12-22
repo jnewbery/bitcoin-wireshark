@@ -1,0 +1,9 @@
+{
+  "bitcoin.magic": "0xfabfb5da",
+  "bitcoin.command": "feefilter",
+  "bitcoin.length": "8",
+  "bitcoin.checksum": "0x3190f875",
+  "bitcoin.feefilter": {
+    "bitcoin.feefilter.feerate": "15000"
+  }
+}
