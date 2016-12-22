@@ -1919,6 +1919,7 @@ proto_reg_handoff_bitcoin(void)
   /* messages with no payload */
   command_handle = create_dissector_handle( dissect_bitcoin_msg_empty, hfi_bitcoin->id );
   dissector_add_string("bitcoin.command", "verack", command_handle);
+  dissector_add_string("bitcoin.command", "sendheaders", command_handle);
   dissector_add_string("bitcoin.command", "getaddr", command_handle);
   dissector_add_string("bitcoin.command", "mempool", command_handle);
   dissector_add_string("bitcoin.command", "filterclear", command_handle);
