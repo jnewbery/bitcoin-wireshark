@@ -466,6 +466,13 @@ static header_field_info hfi_msg_reject_ccode BITCOIN_HFI_INIT =
 static header_field_info hfi_msg_reject_data BITCOIN_HFI_INIT =
   { "Data", "bitcoin.reject.data", FT_BYTES, BASE_NONE, NULL, 0x0, NULL, HFILL };
 
+/* feefilter message */
+static header_field_info hfi_bitcoin_msg_feefilter BITCOIN_HFI_INIT =
+  { "Feefilter message", "bitcoin.feefilter", FT_NONE, BASE_NONE, NULL, 0x0, NULL, HFILL };
+
+static header_field_info hfi_msg_feefilter_feerate BITCOIN_HFI_INIT =
+  { "Feerate", "bitcoin.feefilter.feerate", FT_UINT64, BASE_DEC, NULL, 0x0, NULL, HFILL };
+
 /* filterload message */
 static header_field_info hfi_bitcoin_msg_filterload BITCOIN_HFI_INIT =
   { "Filterload message", "bitcoin.filterload", FT_NONE, BASE_NONE, NULL, 0x0, NULL, HFILL };
@@ -1376,6 +1383,24 @@ dissect_bitcoin_msg_ping(tvbuff_t *tvb, packet_info *pinfo _U_, proto_tree *tree
 }
 
 /**
+ * Handler for feefilter messages
+ */
+static int
+dissect_bitcoin_msg_feefilter(tvbuff_t *tvb, packet_info *pinfo _U_, proto_tree *tree, void *data _U_)
+{
+  proto_item *ti;
+  guint32     offset = 0;
+
+  ti   = proto_tree_add_item(tree, &hfi_bitcoin_msg_feefilter, tvb, offset, -1, ENC_NA);
+  tree = proto_item_add_subtree(ti, ett_bitcoin_msg);
+
+  proto_tree_add_item(tree, &hfi_msg_feefilter_feerate, tvb, offset, 8, ENC_LITTLE_ENDIAN);
+  offset += 8;
+
+  return offset;
+}
+
+/**
  * Handler for pong messages
  */
 static int
@@ -1770,6 +1795,10 @@ proto_register_bitcoin(void)
     &hfi_msg_reject_reason,
     &hfi_msg_reject_data,
 
+    /* feefilter message */
+    &hfi_bitcoin_msg_feefilter,
+    &hfi_msg_feefilter_feerate,
+
     /* filterload message */
     &hfi_bitcoin_msg_filterload,
     &hfi_msg_filterload_filter,
@@ -1909,6 +1938,8 @@ proto_reg_handoff_bitcoin(void)
   dissector_add_string("bitcoin.command", "reject", command_handle);
   command_handle = create_dissector_handle( dissect_bitcoin_msg_headers, hfi_bitcoin->id );
   dissector_add_string("bitcoin.command", "headers", command_handle);
+  command_handle = create_dissector_handle( dissect_bitcoin_msg_feefilter, hfi_bitcoin->id );
+  dissector_add_string("bitcoin.command", "feefilter", command_handle);
   command_handle = create_dissector_handle( dissect_bitcoin_msg_filterload, hfi_bitcoin->id );
   dissector_add_string("bitcoin.command", "filterload", command_handle);
   command_handle = create_dissector_handle( dissect_bitcoin_msg_filteradd, hfi_bitcoin->id );
