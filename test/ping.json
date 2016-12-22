@@ -1,0 +1,9 @@
+{
+  "bitcoin.magic": "0xfabfb5da",
+  "bitcoin.command": "ping",
+  "bitcoin.length": "8",
+  "bitcoin.checksum": "0x38e6aedf",
+  "bitcoin.ping": {
+    "bitcoin.ping.nonce": "0xf73f37dec5f1c5c7"
+  }
+}
