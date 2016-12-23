@@ -1,0 +1,10 @@
+{
+  "bitcoin.magic": "0xfabfb5da",
+  "bitcoin.command": "sendcmpct",
+  "bitcoin.length": "9",
+  "bitcoin.checksum": "0xe92f5ef8",
+  "bitcoin.sendcmpct": {
+    "bitcoin.sendcmpct.mode": "0",
+    "bitcoin.sendcmpct.version": "2"
+  }
+}
