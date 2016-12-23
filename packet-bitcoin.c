@@ -84,6 +84,18 @@ static const value_string filterload_nflags[] =
   { 0, NULL }
 };
 
+static const value_string sendcmpct_version[] =
+{
+  { 1, "Version 1 (no segwit)" },
+  { 2, "Version 2 (segwit)" }
+};
+
+static const value_string sendcmpct_modes[] =
+{
+  { 0, "Low Bandwidth Mode" },
+  { 1, "High Bandwidth Mode" }
+};
+
 /*
  * Minimum bitcoin identification header.
  * - Magic - 4 bytes
@@ -551,6 +563,16 @@ static header_field_info hfi_msg_merkleblock_flags_size64 BITCOIN_HFI_INIT =
 
 static header_field_info hfi_msg_merkleblock_flags_data BITCOIN_HFI_INIT =
   { "Data", "bitcoin.merkleblock.flags.data", FT_BYTES, BASE_NONE, NULL, 0x0, NULL, HFILL };
+
+/* sendcmpct message */
+static header_field_info hfi_bitcoin_msg_sendcmpct BITCOIN_HFI_INIT =
+  { "Sendcmpct message", "bitcoin.sendcmpct", FT_NONE, BASE_NONE, NULL, 0x0, NULL, HFILL };
+
+static header_field_info hfi_msg_sendcmpct_mode BITCOIN_HFI_INIT =
+  { "Mode", "bitcoin.sendcmpct.mode", FT_UINT8, BASE_DEC, VALS(sendcmpct_version), 0x0, NULL, HFILL };
+
+static header_field_info hfi_msg_sendcmpct_version BITCOIN_HFI_INIT =
+  { "Version", "bitcoin.sendcmpct.version", FT_UINT64, BASE_DEC, VALS(sendcmpct_version), 0x0, NULL, HFILL };
 
 /* services */
 static header_field_info hfi_services_network BITCOIN_HFI_INIT =
@@ -1384,6 +1406,27 @@ dissect_bitcoin_msg_ping(tvbuff_t *tvb, packet_info *pinfo _U_, proto_tree *tree
 }
 
 /**
+ * Handler for sendcmpct messages
+ */
+static int
+dissect_bitcoin_msg_sendcmpct(tvbuff_t *tvb, packet_info *pinfo _U_, proto_tree *tree, void *data _U_)
+{
+  proto_item *ti;
+  guint32     offset = 0;
+
+  ti   = proto_tree_add_item(tree, &hfi_bitcoin_msg_sendcmpct, tvb, offset, -1, ENC_NA);
+  tree = proto_item_add_subtree(ti, ett_bitcoin_msg);
+
+  proto_tree_add_item(tree, &hfi_msg_sendcmpct_mode, tvb, offset, 1, ENC_LITTLE_ENDIAN);
+  offset += 1;
+
+  proto_tree_add_item(tree, &hfi_msg_sendcmpct_version, tvb, offset, 8, ENC_LITTLE_ENDIAN);
+  offset += 8;
+
+  return offset;
+}
+
+/**
  * Handler for feefilter messages
  */
 static int
@@ -1831,6 +1874,11 @@ proto_register_bitcoin(void)
     &hfi_msg_merkleblock_hashes_count64,
     &hfi_msg_merkleblock_hashes_hash,
 
+    /* sendcmpct message */
+    &hfi_bitcoin_msg_sendcmpct,
+    &hfi_msg_sendcmpct_mode,
+    &hfi_msg_sendcmpct_version,
+
     /* services */
     &hfi_services_network,
 
@@ -1947,6 +1995,8 @@ proto_reg_handoff_bitcoin(void)
   dissector_add_string("bitcoin.command", "filteradd", command_handle);
   command_handle = create_dissector_handle( dissect_bitcoin_msg_merkleblock, hfi_bitcoin->id );
   dissector_add_string("bitcoin.command", "merkleblock", command_handle);
+  command_handle = create_dissector_handle( dissect_bitcoin_msg_sendcmpct, hfi_bitcoin->id );
+  dissector_add_string("bitcoin.command", "sendcmpct", command_handle);
 
   /* messages with no payload */
   command_handle = create_dissector_handle( dissect_bitcoin_msg_empty, hfi_bitcoin->id );
