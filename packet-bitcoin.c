@@ -59,6 +59,7 @@ static const value_string inv_types[] =
   { 0, "ERROR" },
   { 1, "MSG_TX" },
   { 2, "MSG_BLOCK" },
+  { 3, "MSG_FILTERED_BLOCK" },
   { 0, NULL }
 };
 
