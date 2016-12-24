@@ -1,0 +1,9 @@
+{
+  "bitcoin.magic": "0xfabfb5da",
+  "bitcoin.command": "pong",
+  "bitcoin.length": "8",
+  "bitcoin.checksum": "0x31763d5d",
+  "bitcoin.pong": {
+    "bitcoin.pong.nonce": "0x5498a160913a0aac"
+  }
+}
