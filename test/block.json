@@ -1,0 +1,35 @@
+{
+  "bitcoin.magic": "0xfabfb5da",
+  "bitcoin.command": "block",
+  "bitcoin.length": "144",
+  "bitcoin.checksum": "0x396b3759",
+  "bitcoin.block": {
+    "bitcoin.block.version": "4",
+    "bitcoin.block.prev_block": "06:22:6e:46:11:1a:0b:59:ca:af:12:60:43:eb:5b:bf:28:c3:4f:3a:5e:33:2a:1f:c7:b2:b7:3c:f1:88:91:0f",
+    "bitcoin.block.merkle_root": "3c:75:51:a0:45:60:94:4e:ed:f4:23:67:88:a2:1b:11:7e:60:ad:bf:21:11:1a:7c:c7:97:34:f8:53:b3:cd:e9",
+    "bitcoin.block.timestamp": "Feb  2, 2011 23:16:43.000000000 UTC",
+    "bitcoin.block.bits": "0x207fffff",
+    "bitcoin.block.nonce": "0x00000001",
+    "bitcoin.block.num_transactions": "1",
+    "bitcoin.tx": {
+      "bitcoin.tx.version": "1",
+      "bitcoin.tx.input_count": "1",
+      "bitcoin.tx.in": {
+	"bitcoin.tx.in.prev_output": {
+	  "bitcoin.tx.in.prev_output.hash": "00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00",
+	  "bitcoin.tx.in.prev_output.index": "4294967295"
+	},
+	"bitcoin.tx.in.script_length": "2",
+	"bitcoin.tx.in.sig_script": "01:01",
+	"bitcoin.tx.in.seq": "4294967295"
+      },
+      "bitcoin.tx.output_count": "1",
+      "bitcoin.tx.out": {
+	"bitcoin.tx.out.value": "5000000000",
+	"bitcoin.tx.out.script_length": "1",
+	"bitcoin.tx.out.script": "51"
+      },
+      "bitcoin.tx.lock_time": "0"
+    }
+  }
+}
