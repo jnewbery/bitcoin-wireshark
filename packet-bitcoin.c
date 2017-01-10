@@ -588,6 +588,51 @@ static header_field_info hfi_address_address BITCOIN_HFI_INIT =
 static header_field_info hfi_address_port BITCOIN_HFI_INIT =
   { "Node port", "bitcoin.address.port", FT_UINT16, BASE_DEC, NULL, 0x0, NULL, HFILL };
 
+/* cmpctblock message*/
+static header_field_info hfi_msg_cmpctblock_nonce BITCOIN_HFI_INIT =
+  { "Nonce", "bitcoin.cmpctblock.nonce", FT_UINT64, BASE_HEX, NULL, 0x0, NULL, HFILL };
+
+static header_field_info hfi_msg_cmpctblock_shortidslength8 BITCOIN_HFI_INIT =
+  { "Short IDs length", "bitcoin.cmpctblock.shortidslength", FT_UINT8, BASE_DEC, NULL, 0x0, NULL, HFILL };
+
+static header_field_info hfi_msg_cmpctblock_shortidslength16 BITCOIN_HFI_INIT =
+  { "Short IDs length", "bitcoin.cmpctblock.shortidslength", FT_UINT16, BASE_DEC, NULL, 0x0, NULL, HFILL };
+
+static header_field_info hfi_msg_cmpctblock_shortid BITCOIN_HFI_INIT =
+  { "Short ID", "bitcoin.cmpctblock.shortid", FT_UINT64, BASE_HEX, NULL, 0x0, NULL, HFILL };
+
+static header_field_info hfi_msg_cmpctblock_prefilledtxnlength8 BITCOIN_HFI_INIT =
+  { "Prefilled txn length", "bitcoin.cmpctblock.prefilledtxnlength", FT_UINT8, BASE_DEC, NULL, 0x0, NULL, HFILL };
+
+static header_field_info hfi_msg_cmpctblock_prefilledtxnlength16 BITCOIN_HFI_INIT =
+  { "Prefilled txn length", "bitcoin.cmpctblock.prefilledtxnlength", FT_UINT16, BASE_DEC, NULL, 0x0, NULL, HFILL };
+
+static header_field_info hfi_msg_cmpctblock_prefilledtxn_index8 BITCOIN_HFI_INIT =
+  { "Index", "bitcoin.cmpctblock.prefilledtxn.index", FT_UINT8, BASE_DEC, NULL, 0x0, NULL, HFILL };
+
+static header_field_info hfi_msg_cmpctblock_prefilledtxn_index16 BITCOIN_HFI_INIT =
+  { "Index", "bitcoin.cmpctblock.prefilledtxn.index", FT_UINT16, BASE_DEC, NULL, 0x0, NULL, HFILL };
+
+/* getblocktxn message */
+static header_field_info hfi_msg_getblocktxn_blockhash BITCOIN_HFI_INIT =
+  { "Block hash", "bitcoin.getblocktxn.blockhash", FT_BYTES, BASE_NONE, NULL, 0x0, NULL, HFILL };
+
+static header_field_info hfi_msg_getblocktxn_indexeslength8 BITCOIN_HFI_INIT =
+  { "Indexes length", "bitcoin.getblocktxn.indexeslength", FT_UINT8, BASE_DEC, NULL, 0x0, NULL, HFILL };
+
+static header_field_info hfi_msg_getblocktxn_indexeslength16 BITCOIN_HFI_INIT =
+  { "Indexes length", "bitcoin.getblocktxn.indexeslength", FT_UINT16, BASE_DEC, NULL, 0x0, NULL, HFILL };
+
+/* blocktxn message */
+static header_field_info hfi_msg_blocktxn_blockhash BITCOIN_HFI_INIT =
+  { "Block hash", "bitcoin.blocktxn.blockhash", FT_BYTES, BASE_NONE, NULL, 0x0, NULL, HFILL };
+
+static header_field_info hfi_msg_blocktxn_transactionslength8 BITCOIN_HFI_INIT =
+  { "Transactions length", "bitcoin.blocktxn.transactionslength", FT_UINT8, BASE_DEC, NULL, 0x0, NULL, HFILL };
+
+static header_field_info hfi_msg_blocktxn_transactionslength16 BITCOIN_HFI_INIT =
+  { "Transactions length", "bitcoin.blocktxn.transactionslength", FT_UINT16, BASE_DEC, NULL, 0x0, NULL, HFILL };
+
 /* variable string */
 static header_field_info hfi_string_value BITCOIN_HFI_INIT =
   { "String value", "bitcoin.string.value", FT_STRING, BASE_NONE, NULL, 0x0, NULL, HFILL };
@@ -620,9 +665,9 @@ static header_field_info hfi_data_varint_count32 BITCOIN_HFI_INIT =
 static header_field_info hfi_data_varint_count64 BITCOIN_HFI_INIT =
   { "Count", "bitcoin.data.count64", FT_UINT64, BASE_DEC, NULL, 0x0, NULL, HFILL };
 
-
 static gint ett_bitcoin = -1;
 static gint ett_bitcoin_msg = -1;
+static gint ett_block_header = -1;
 static gint ett_services = -1;
 static gint ett_address = -1;
 static gint ett_string = -1;
@@ -678,6 +723,31 @@ create_services_tree(tvbuff_t *tvb, proto_item *ti, guint32 offset)
   proto_tree_add_boolean(tree, &hfi_services_network, tvb, offset, 4, (guint32)services);
 
   /* end of services */
+
+  return tree;
+}
+
+/**
+ * Create a sub-tree and fill it with a block_header structure
+ */
+static proto_tree *
+create_blockheader_tree(tvbuff_t *tvb, proto_item *ti, guint32 offset)
+{
+  proto_tree *tree;
+
+  tree = proto_item_add_subtree(ti, ett_block_header);
+
+  /* services */
+  ti = proto_tree_add_item(tree, &hfi_address_services, tvb, offset, 8, ENC_LITTLE_ENDIAN);
+  create_services_tree(tvb, ti, offset);
+  offset += 8;
+
+  /* IPv6 address */
+  proto_tree_add_item(tree, &hfi_address_address, tvb, offset, 16, ENC_NA);
+  offset += 16;
+
+  /* port */
+  proto_tree_add_item(tree, &hfi_address_port, tvb, offset, 2, ENC_BIG_ENDIAN);
 
   return tree;
 }
@@ -1406,6 +1476,26 @@ dissect_bitcoin_msg_ping(tvbuff_t *tvb, packet_info *pinfo _U_, proto_tree *tree
 }
 
 /**
+ * Handler for cmpctblock messages
+ */
+static int
+dissect_bitcoin_msg_cmpctblock(tvbuff_t *tvb, packet_info *pinfo _U_, proto_tree *tree, void *data _U_)
+{
+  proto_item *ti;
+  guint32     offset = 0;
+
+  ti   = proto_tree_add_item(tree, &hfi_bitcoin_msg_cmpctblock, tvb, offset, -1, ENC_NA);
+  tree = proto_item_add_subtree(ti, ett_bitcoin_msg);
+
+  proto_tree_add_item(tree, &hfi_msg_sendcmpct_mode, tvb, offset, 80, ENC_LITTLE_ENDIAN);
+  offset += 1;
+
+  proto_tree_add_item(tree, &hfi_msg_sendcmpct_version, tvb, offset, 8, ENC_LITTLE_ENDIAN);
+  offset += 8;
+
+  return offset;
+}
+/**
  * Handler for sendcmpct messages
  */
 static int
@@ -1906,6 +1996,7 @@ proto_register_bitcoin(void)
   static gint *ett[] = {
     &ett_bitcoin,
     &ett_bitcoin_msg,
+    &ett_block_header,
     &ett_services,
     &ett_address,
     &ett_string,
